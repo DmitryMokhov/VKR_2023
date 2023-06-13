@@ -42,9 +42,9 @@ def prophet_forecast(train: pd.DataFrame,
     return metrics, forecast
 
 
-def catboost_loop(train: сatboost.Pool, 
-                  valid: catboost.Pool, 
-                  test: catboost.Pool, 
+def catboost_loop(train: Pool, 
+                  valid: Pool, 
+                  test: Pool, 
                   best_params: dict):
     """
     Функция для построения прогноза с помощью Catboost
@@ -131,7 +131,7 @@ def lstm_loop(train: pd.DataFrame,
     """
     trainX, trainY, validX, validY, cur_scaler = prep_data_lstm(train, valid, lookback)
 
-    lstm_model = get_lstm_net()
+    lstm_model = get_lstm_net(lookback=7)
     early_stop = EarlyStopping(monitor = 'val_loss', min_delta = 1e-4, patience = 5)
 
     lstm_model.fit(trainX, trainY, 
@@ -144,9 +144,9 @@ def lstm_loop(train: pd.DataFrame,
     preds = np.array(preds)
     preds = cur_scaler.inverse_transform(preds).flatten()
 
-    error = mae(test.y, preds)
+    metrics = calculate_metrics(test, preds)
 
-    return error, preds
+    return metrics, preds
 
 
 def calculate_metrics(fact: pd.DataFrame, forecast: Union[np.array, list]):
@@ -161,7 +161,7 @@ def calculate_metrics(fact: pd.DataFrame, forecast: Union[np.array, list]):
     cur_rmse = mse(fact.y, forecast, squared=False)
     cur_mae = mae(fact.y, forecast)
 
-    metrics = pd.DataFrame(data = {'mape': cur_mape,
-                                  'rmse': cur_rmse,
-                                  'mae': cur_mae})
+    metrics = pd.DataFrame(data = {'mape': [cur_mape],
+                                  'rmse': [cur_rmse],
+                                  'mae': [cur_mae]})
     return metrics

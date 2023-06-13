@@ -16,8 +16,8 @@ def run_exp_smoothing_eval(id: int, plot_forecast = True):
     """
     df = load_data(f'data/series{id}.csv')
     train, test = split_data_without_val(id, df)
-    exp_train = train[['ds', 'y']]
-    exp_test = test[['ds', 'y']]
+    exp_train = train[['ds', 'y']].set_index(['ds'])
+    exp_test = test[['ds', 'y']].set_index(['ds'])
     
     exp_sm = ExponentialSmoothing(exp_train,
                                   trend = 'add',
@@ -28,6 +28,7 @@ def run_exp_smoothing_eval(id: int, plot_forecast = True):
     exp_sm_forecast = exp_sm.forecast(len(test))
     metrics = calculate_metrics(exp_test, exp_sm_forecast)
 
+    exp_test.reset_index(inplace = True)
     if plot_forecast:
         plot_forecasts(exp_test, [exp_sm_forecast], ['exp smoothing'])
 

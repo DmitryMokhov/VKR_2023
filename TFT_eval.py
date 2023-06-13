@@ -58,7 +58,7 @@ def run_tft_eval(id: int, plot_forecast = True):
     cur_mape = mape(future.y, forecast.y)
     cur_rmse = mse(future.y, forecast.y, squared=False)
     cur_mae = mae(future.y, forecast.y)
-    metrics = {'mape': cur_mape, 'rmse': cur_rmse, 'mae': cur_mae}
+    metrics = {'mape': [cur_mape], 'rmse': [cur_rmse], 'mae': [cur_mae]}
     metrics = pd.DataFrame(metrics)
 
     if plot_forecast:

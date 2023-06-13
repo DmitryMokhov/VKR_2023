@@ -34,7 +34,7 @@ def run_nbeats_eval(id: int, plot_forecast = True):
 
     train, valid, test = slice_dfs(df, FORECAST_LENGTH, FORECAST_LENGTH * lookback_coef)
     train_tsd, valid_tsd, test_tsd = create_tsds(train, valid, test, FORECAST_LENGTH, 
-                                                 lookback_coef, model_type='nbeats')
+                                                 lookback_coef * FORECAST_LENGTH, model_type='nbeats')
     train_loader = train_tsd.to_dataloader(train = True, batch_size = batch_size)
     valid_loader = valid_tsd.to_dataloader(train = False, batch_size = batch_size)
     test_loader = test_tsd.to_dataloader(train = False, batch_size = batch_size)
@@ -59,7 +59,7 @@ def run_nbeats_eval(id: int, plot_forecast = True):
     cur_mape = mape(future.y, forecast.y)
     cur_rmse = mse(future.y, forecast.y, squared=False)
     cur_mae = mae(future.y, forecast.y)
-    metrics = {'mape': cur_mape, 'rmse': cur_rmse, 'mae': cur_mae}
+    metrics = {'mape': [cur_mape], 'rmse': [cur_rmse], 'mae': [cur_mae]}
     metrics = pd.DataFrame(metrics)
 
     if plot_forecast:

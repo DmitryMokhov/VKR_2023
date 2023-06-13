@@ -27,7 +27,7 @@ def create_features(df: pd.DataFrame, holidays: list):
     d['year'] = d['ds'].dt.year
     d['dayofyear'] = d['ds'].dt.dayofyear
     d['dayofmonth'] = d['ds'].dt.day
-    d['week'] = d['ds'].dt.week
+    d['week'] = d['ds'].dt.isocalendar().week
     d['month_start'] = d['ds'].dt.is_month_start.apply(lambda x: 0 if x == False else 1)
     d['month_end'] = d['ds'].dt.is_month_end.apply(lambda x: 0 if x == False else 1)
     d['quarter_start'] = d['ds'].dt.is_quarter_start.apply(lambda x: 0 if x == False else 1)
