@@ -3,8 +3,6 @@ import numpy as np
 import time
 from prophet import Prophet
 from catboost import CatBoostRegressor as cbr
-from catboost import Pool
-from datetime import datetime, timedelta
 from itertools import product
 from sklearn.metrics import mean_absolute_error as mae
 from sklearn.metrics import mean_absolute_percentage_error as mape

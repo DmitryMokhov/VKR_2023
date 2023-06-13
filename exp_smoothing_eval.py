@@ -2,16 +2,9 @@ import pandas as pd
 import numpy as np
 from statsmodels.tsa.api import ExponentialSmoothing
 
-from sklearn.metrics import mean_absolute_error as mae
-from sklearn.metrics import mean_squared_error as mse
-from sklearn.metrics import mean_absolute_percentage_error as mape
-
-import plotly
-import plotly.express as px
-import plotly.graph_objects as go
-
-from common_utils import*
-from data_prep import *
+from common_utils import *
+from data_prep import split_data_without_val
+from forecast_funcs import calculate_metrics
 
 
 def run_exp_smoothing_eval(id: int, plot_forecast = True):
@@ -42,4 +35,4 @@ def run_exp_smoothing_eval(id: int, plot_forecast = True):
 
 
 exp_metrics, exp_forecast = run_exp_smoothing_eval(1)
-print(metrics)
+print(exp_metrics)

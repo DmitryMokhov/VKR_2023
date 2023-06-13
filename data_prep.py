@@ -1,30 +1,7 @@
 import pandas as pd
 import numpy as np
-import time
-from prophet import Prophet
-from catboost import CatBoostRegressor as cbr
 from catboost import Pool
-import matplotlib.pyplot as plt
-import seaborn as sns
-from scipy import stats
-import statsmodels.api as sm
-from statsmodels.tsa.statespace.sarimax import SARIMAX
-from statsmodels.tsa.stattools import adfuller
-from datetime import datetime, timedelta
-from itertools import product
-from sklearn.metrics import mean_absolute_error as mae
-from sklearn.metrics import mean_absolute_percentage_error as mape
-
 from sklearn.preprocessing import MinMaxScaler
-from keras.callbacks import EarlyStopping
-from keras.preprocessing.sequence import TimeseriesGenerator
-from keras.models import Sequential
-from keras.layers import Dense, LSTM, Dropout
-
-import plotly
-import plotly.express as px
-import plotly.graph_objects as go
-
 
 
 holidays = ['2019-01-01', '2019-01-02', '2019-01-03', '2019-01-04',
