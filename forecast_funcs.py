@@ -45,8 +45,7 @@ def prophet_forecast(train: pd.DataFrame,
 def catboost_loop(train: сatboost.Pool, 
                   valid: catboost.Pool, 
                   test: catboost.Pool, 
-                  best_params: dict, 
-                  error_func):
+                  best_params: dict):
     """
     Функция для построения прогноза с помощью Catboost
     параметры:
@@ -54,7 +53,6 @@ def catboost_loop(train: сatboost.Pool,
         valid: данные для валидации в ходе обучения,
         test: тестовые данные,
         best_params: словарь с гиперпараметрами модели
-        error_func: функция ошибки
 
     Возвращает:
         error: float - ошибка прогноза по выбранному функционалу
@@ -66,9 +64,12 @@ def catboost_loop(train: сatboost.Pool,
             early_stopping_rounds = 25,
             verbose = False)
     forecast = cat.predict(test)
-    error = error_func(test.get_label(), forecast)
+    test_y = test.get_label()
+    test_y = pd.DataFrame(test_y)
+    test_y.columns = ['y']
+    metrics = calculate_metrics(test_y, forecast)
 
-    return error, forecast
+    return metrics, forecast
 
 
 def get_lstm_net(lookback):

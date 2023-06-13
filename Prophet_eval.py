@@ -6,6 +6,8 @@ from forecast_funcs import *
 from data_prep import *
 from tuning_funcs import *
 
+from sklearn.metrics import mean_absolute_error as mae
+
 
 def run_prophet_eval(id: int, plot_forecast = True):
     """
