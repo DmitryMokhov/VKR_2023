@@ -24,6 +24,7 @@ def create_features(df: pd.DataFrame, holidays: list):
     """
     
     d = df.copy()
+    d['ds'] = pd.to_datetime(d['ds'])
     d['dayofweek'] = d['ds'].dt.dayofweek
     d['quarter'] = d['ds'].dt.quarter
     d['month'] = d['ds'].dt.month

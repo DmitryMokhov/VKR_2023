@@ -160,3 +160,25 @@ def get_cat_pools(train: pd.DataFrame, valid: pd.DataFrame, test: pd.DataFrame):
     test_pool = Pool(test_cat, label = y_test)
 
     return train_pool, val_pool, test_pool
+
+
+def split_data_without_val(id: int,
+                           df: pd.DataFrame):
+    """
+    Функция для разделения данный на обучение и тест для методов, которым не нужен дополнительный
+    валидационный набор
+    Параметры:
+        id: номер ряда из исследования - 1 или 2,
+        df - датафрейм, содержащий значения временного ряда и колонку дат ds
+    Возвращает:
+        train: pd.DataFrame с данными для обучения,
+        test: pd.DataFrame c данными для проверки точности прогноза
+    """
+    if id == 1:
+        train = df[df.ds < '2023-03-22']
+        test = df[df.ds >= '2023-03-22']
+        return train, test
+    elif id == 2:
+        train = df[df.ds < '2023-02-01']
+        test = df[df.ds >= '2023-02-01']
+        return train, test

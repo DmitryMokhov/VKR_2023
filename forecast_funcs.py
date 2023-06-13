@@ -13,6 +13,7 @@ from statsmodels.tsa.stattools import adfuller
 from datetime import datetime, timedelta
 from itertools import product
 from sklearn.metrics import mean_absolute_error as mae
+from sklearn.metrics import mean_squared_error as mse
 from sklearn.metrics import mean_absolute_percentage_error as mape
 
 from sklearn.preprocessing import MinMaxScaler
@@ -30,8 +31,7 @@ from data_prep import *
 
 def prophet_forecast(train: pd.DataFrame, 
                      test: pd.DataFrame, 
-                     best_params: 
-                     dict, error_func):
+                     best_params: dict):
     """
     Функция для построения прогноза с Prophet
     Args:
@@ -45,15 +45,20 @@ def prophet_forecast(train: pd.DataFrame,
         forecast - прогноз Prophet для тестового периода
     """
 
-    
     prop = Prophet(**best_params)
     prop.add_seasonality(name = 'monthly', period = 30.4, 
                             fourier_order = 5, prior_scale = 10, mode = 'multiplicative')
     prop.fit(train)
     forecast = prop.predict(test).yhat.values
-    error = error_func(test.y, forecast)
+    cur_mape = mape(test.y, forecast)
+    cur_rmse = mse(test.y, forecast, squared=False)
+    cur_mae = mae(test.y, forecast)
 
-    return error, forecast
+    metrics = pd.DataFrame(data = {'mape': cur_mape,
+                                  'rmse': cur_rmse,
+                                  'mae': cur_mae})
+
+    return metrics, forecast
 
 
 def catboost_loop(train: сatboost.Pool, 

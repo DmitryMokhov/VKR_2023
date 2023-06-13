@@ -28,7 +28,7 @@ def run_nbeats_eval(id: int, plot_forecast = True):
         series (int): номер ряда - 1 или 2
     """
 
-    df = load_data(f'datc/series{id}.csv')
+    df = load_data(f'data/series{id}.csv')
     config = json.load(open(f'configs/nbeats_series{id}.json'))
 
     batch_size = config['batch_size']
@@ -65,10 +65,10 @@ def run_nbeats_eval(id: int, plot_forecast = True):
                                holidays=holidays,
                                forecast_start_date = future.ds.min())
     
-    mape = mape(future.y, forecast.y)
-    rmse = mse(future.y, forecast.y, squared=True)
-    mae = mae(future.y, forecast.y)
-    metrics = {'mape': mape, 'rmse': rmse, 'mae': mae}
+    cur_mape = mape(future.y, forecast.y)
+    cur_rmse = mse(future.y, forecast.y, squared=False)
+    cur_mae = mae(future.y, forecast.y)
+    metrics = {'mape': cur_mape, 'rmse': cur_rmse, 'mae': cur_mae}
     metrics = pd.DataFrame(metrics)
 
     if plot_forecast:
