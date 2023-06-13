@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import time
+from typing import Union
 from prophet import Prophet
 from catboost import CatBoostRegressor as cbr
 from catboost import Pool
@@ -50,13 +51,7 @@ def prophet_forecast(train: pd.DataFrame,
                             fourier_order = 5, prior_scale = 10, mode = 'multiplicative')
     prop.fit(train)
     forecast = prop.predict(test).yhat.values
-    cur_mape = mape(test.y, forecast)
-    cur_rmse = mse(test.y, forecast, squared=False)
-    cur_mae = mae(test.y, forecast)
-
-    metrics = pd.DataFrame(data = {'mape': cur_mape,
-                                  'rmse': cur_rmse,
-                                  'mae': cur_mae})
+    metrics = calculate_metrics(test, forecast)
 
     return metrics, forecast
 
@@ -165,3 +160,21 @@ def lstm_loop(train: pd.DataFrame,
     error = mae(test.y, preds)
 
     return error, preds
+
+
+def calculate_metrics(fact: pd.DataFrame, forecast: Union[np.array, list]):
+    """
+    Функция для вычисления метрик точности прогноза
+    Параметры:
+        fact (pd.DataFrame): датафрейм с фактическими данными, обязательно должен содержать колонку 'y'
+            с настоящими значениями временного ряда за прогнозный период, 
+        forecast (Union[np.array, list]): прогноз модели.
+    """
+    cur_mape = mape(fact.y, forecast)
+    cur_rmse = mse(fact.y, forecast, squared=False)
+    cur_mae = mae(fact.y, forecast)
+
+    metrics = pd.DataFrame(data = {'mape': cur_mape,
+                                  'rmse': cur_rmse,
+                                  'mae': cur_mae})
+    return metrics

@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import time
+from typing import Union
 from datetime import datetime, timedelta
 from itertools import product
 
@@ -43,12 +44,12 @@ def create_features(df: pd.DataFrame, holidays: list):
     return d
 
 
-def plot_forecasts(fact: pd.DataFrame, forecasts: list, labels: list):
+def plot_forecasts(fact: pd.DataFrame, forecasts: Union[list, np.array], labels: list):
     """
     Отрисовка графиков прогнозов
     Args:
         fact (pd.DataFrame): датафрейм, содержищий фактические значения ряда и колонку дат ds,
-        forecasts (list): список прогнозов, сами прогнозы могут быть либо списком, либо np.array,
+        forecasts (list | np.array): список прогнозов,
         labels (list): список названий для отображения на графике
     """
     fig = go.Figure()
