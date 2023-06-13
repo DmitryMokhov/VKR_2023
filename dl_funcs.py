@@ -16,6 +16,8 @@ from sklearn.metrics import mean_absolute_error as mae
 from sklearn.metrics import mean_squared_error as mse
 from sklearn.metrics import mean_absolute_percentage_error as mape
 
+from common_utils import *
+
 
 def create_tsds(train_data: pd.DataFrame, 
                 val_data: pd.DataFrame, 
@@ -55,9 +57,6 @@ def create_tsds(train_data: pd.DataFrame,
                                 'dayofyear', 'week', 'month_start', 'month_end', 
                                 'quarter_end', 'year_start', 'year_end', 'days_in_month', 'is_holiday'],
         time_varying_unknown_reals = ['y'],
-        target_normalizer=gn(
-            groups=["series_id"]
-            )
         )
 
     elif model_type == 'nbeats':

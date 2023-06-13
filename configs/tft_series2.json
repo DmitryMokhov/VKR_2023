@@ -1,0 +1,9 @@
+{
+    "batch_size": 16,
+    "learning_rate": 0.0005,
+    "hidden_size": 64,
+    "hidden_continuous_size": 32,
+    "attention_head_size": 8,
+    "dropout": 0.25,
+    "lookback_coef": 4
+}
