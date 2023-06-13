@@ -10,7 +10,7 @@ from lightning.pytorch.callbacks import EarlyStopping, LearningRateMonitor
 from lightning.pytorch.tuner import Tuner
 from pytorch_forecasting.models import TemporalFusionTransformer as tft
 from pytorch_forecasting.models import NBeats
-from pytorch_forecasting.models.temporal_fusion_transformer.tuning import optimize_hyperparameters
+from pytorch_forecasting.metrics.quantile import QuantileLoss
 
 from sklearn.metrics import mean_absolute_error as mae 
 from sklearn.metrics import mean_squared_error as mse
@@ -209,3 +209,100 @@ def prediction_loop(model,
     df_known.reset_index(inplace = True, drop = True)
 
     return df_known
+
+
+def split_train_forecast(df: pd.DataFrame, id: int):
+    """
+    Функция для разделения данных на прогнозный период и обучение + валидацию + первый шаг прогноза
+    Args:
+        df (pd.DataFrame): датафрейм с временным рядом
+        id (int): id ряда в исследовании - 1 или 2
+
+    Returns:
+        train: датафрейм, содержащий данные для обучения DL-модели, ее валидации и первого шага прогноза
+        forecast: датафрейм с прогнозным периодом
+    """
+    if id == 1:
+        train = df[df.ds < '2023-03-29']
+        forecast = df[df.ds >= '2023-03-22']
+        return train, forecast
+    elif id == 2:
+        train = df[df.ds < '2023-02-08']
+        forecast = df[df.ds >= '2023-02-01']
+        return train, forecast
+    
+
+
+def fit_dl_model(train_tsd, 
+                 train_loader, 
+                 val_loader,
+                 model_type,
+                 model_params,
+                 forecast_length = 7):
+    """
+    Обучение DL-модели из pytorch_forecasting
+    Параметры:
+        train_tsd (TimeSeriesDataset): tsd, из которого создается модель с помощью метода "from_dataset",
+        train_loader (Dataloader): лоадер тренировочных данных,
+        val_loader (Dataloader): лоадер валидационных данных,
+        model_type (str): тип модели - tft или nbeats,
+        model_params (dict): словарь параметров модели,
+        forecast_length - длина одного шага прогноза
+    """
+
+    early_stop_callback = EarlyStopping(monitor="val_loss", min_delta=1e-4, 
+                                        patience=5, verbose=True, mode="min")
+    
+    trainer = Trainer(
+    max_epochs=50,
+    accelerator = 'gpu',
+    devices=1,
+    enable_model_summary=True,
+    gradient_clip_val=0.1,
+    callbacks=[early_stop_callback]
+    )
+
+    if model_type == 'tft':
+        model = tft.from_dataset(
+        train_tsd,
+        learning_rate = model_params['learning_rate'],
+        hidden_size = model_params['hidden_size'],
+        attention_head_size = model_params['attention_head_size'],
+        dropout = model_params['dropout'],
+        hidden_continuous_size = model_params['hidden_continuous_size'],
+        output_size = 7, 
+        loss = QuantileLoss(),
+        log_interval = 10, 
+        reduce_on_plateau_patience = 2)
+
+        trainer.fit(
+            model,
+            train_dataloaders=train_loader,
+            val_dataloaders=val_loader)
+        
+        return model
+    
+
+    elif model_type == 'nbeats':
+        model = NBeats.from_dataset(
+        train_tsd, 
+        learning_rate = model_params['learning_rate'], 
+        stack_types = ['generic'],
+        num_blocks = model_params['num_blocks'],
+        num_block_layers = [4],
+        widths = [512],
+        sharing = False,
+        prediction_length = forecast_length,
+        expansion_coefficient_lengths = [32],
+        context_length = forecast_length * model_params['lookback_coef'],
+        weight_decay=1e-2, 
+        backcast_loss_ratio=0.1,
+        )
+
+        trainer.fit(
+            model,
+            train_dataloaders=train_loader,
+            val_dataloaders=val_loader)
+        
+        return model
+

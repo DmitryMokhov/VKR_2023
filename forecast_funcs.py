@@ -47,7 +47,7 @@ def prophet_forecast(train: pd.DataFrame,
 
     
     prop = Prophet(**best_params)
-    prop.add_seasonality(name = 'hourly', period = 30.4, 
+    prop.add_seasonality(name = 'monthly', period = 30.4, 
                             fourier_order = 5, prior_scale = 10, mode = 'multiplicative')
     prop.fit(train)
     forecast = prop.predict(test).yhat.values
@@ -85,7 +85,7 @@ def catboost_loop(train: сatboost.Pool,
     return error, forecast
 
 
-def get_lstm_net():
+def get_lstm_net(lookback):
     """
     Функция, возвращающая объект LSTM-нейросети
     """

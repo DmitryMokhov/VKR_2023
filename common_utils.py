@@ -55,3 +55,21 @@ def plot_forecasts(fact: pd.DataFrame, forecasts: list, labels: list):
     for forc, label in zip(forecasts, labels):
         fig.add_trace(go.Line(x = fact.ds, y = forc, name = 'label'))
     fig.show()
+
+
+def load_data(path: str):
+    data = pd.read_csv(path, sep = ';')
+    return data
+
+
+def retrive_ds(series: int):
+    if series == 1:
+        ds = pd.date_range('2021-07-01', '2023-05-22')
+        future_dates = pd.date_range('2023-03-29', '2023-05-22')
+        return ds, future_dates
+    elif series == 2:
+        ds = pd.date_range('2019-01-01', '2023-03-31')
+        future_dates = pd.date_range('2023-02-08', '2023-03-31')
+        return ds, future_dates
+    else:
+        raise ValueError('No such series')
