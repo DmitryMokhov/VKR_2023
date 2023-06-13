@@ -34,8 +34,7 @@ def run_nbeats_eval(id: int, plot_forecast = True):
     batch_size = config['batch_size']
     lookback_coef = config['lookback_coef']
 
-    ds, future_dates = retrive_ds(id)
-    df['ds'] = ds
+    future_dates = get_future_dates(id)
     df['time_idx'] = np.arange(len(df))
     df['series_id'] = '0'
 

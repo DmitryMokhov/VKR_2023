@@ -61,17 +61,16 @@ def plot_forecasts(fact: pd.DataFrame, forecasts: Union[list, np.array], labels:
 
 def load_data(path: str):
     data = pd.read_csv(path, sep = ';')
+    data['ds'] = pd.to_datetime(data['ds'])
     return data
 
 
-def retrive_ds(series: int):
+def get_future_dates(series: int):
     if series == 1:
-        ds = pd.date_range('2021-07-01', '2023-05-22')
         future_dates = pd.date_range('2023-03-29', '2023-05-22')
-        return ds, future_dates
+        return future_dates
     elif series == 2:
-        ds = pd.date_range('2019-01-01', '2023-03-31')
         future_dates = pd.date_range('2023-02-08', '2023-03-31')
-        return ds, future_dates
+        return future_dates
     else:
         raise ValueError('No such series')

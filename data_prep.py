@@ -166,7 +166,7 @@ def split_data_without_val(id: int,
                            df: pd.DataFrame):
     """
     Функция для разделения данный на обучение и тест для методов, которым не нужен дополнительный
-    валидационный набор
+    валидационный набор (Prophet, SARIMA, эксп. сглаживание)
     Параметры:
         id: номер ряда из исследования - 1 или 2,
         df - датафрейм, содержащий значения временного ряда и колонку дат ds
@@ -182,3 +182,28 @@ def split_data_without_val(id: int,
         train = df[df.ds < '2023-02-01']
         test = df[df.ds >= '2023-02-01']
         return train, test
+    
+
+def split_data_with_val(id: int, df: pd.DataFrame):
+    """
+    Функция для разделения данных на обучение, валидацию и тест для методов, которые используют
+    валидационный набор в ходе обучения (Сatboost, LSTM)
+    Параметры:
+        id (int): номер ряда, 1 или 2
+        df (pd.DataFrame): датафрейм, содержащий значения временного ряда 
+            и колонку дат ds
+    Возвращает:
+        train: pd.DataFrame,
+        valid: pd.DataFrame,
+        test: pd.DataFrame
+    """
+    if id == 1:
+        train = df[df.ds < '2023-02-01']
+        val = df[(df.ds >= '2023-02-01') & (df.ds < '2023-03-22')]
+        test = df[df.ds >= '2023-03-22']
+        return train, val, test
+    elif id == 2:
+        train = df[df.ds < '2022-12-01']
+        val = df[(df.ds >= '2022-12-01') & (df.ds < '2023-02-01')]
+        test = df[df.ds >= '2023-02-01']
+        return train, val, test

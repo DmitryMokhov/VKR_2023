@@ -31,7 +31,7 @@ def run_prophet_eval(id: int, plot_forecast = True):
     metrics, forecast = prophet_forecast(train, test, prop_best_params)
 
     if plot_forecast:
-        plot_forecasts(test, [forecast.y], ['Prophet'])
+        plot_forecasts(test, [forecast], ['Prophet'])
 
     return metrics, forecast
 
