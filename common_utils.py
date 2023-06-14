@@ -62,7 +62,7 @@ def load_data(path: str):
 
 def get_future_dates(series: int):
     if series == 1:
-        future_dates = pd.date_range('2023-03-29', '2023-05-22')
+        future_dates = pd.date_range('2023-03-29', '2023-05-19')
         return future_dates
     elif series == 2:
         future_dates = pd.date_range('2023-02-08', '2023-03-31')

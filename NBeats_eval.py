@@ -62,10 +62,11 @@ def run_nbeats_eval(id: int, plot_forecast = True):
     #cur_mae = mae(future.y, forecast.y)
     #metrics = {'mape': [cur_mape], 'rmse': [cur_rmse], 'mae': [cur_mae]}
     #metrics = pd.DataFrame(metrics)
+    forecast = forecast.y.values
     metrics = calculate_metrics(future, forecast, id = id)
 
     if plot_forecast:
-        plot_forecasts(future, [forecast.y], ['N-BEATS'])
+        plot_forecasts(future, [forecast], ['N-BEATS'])
 
     return metrics, forecast
 

@@ -27,6 +27,7 @@ def run_exp_smoothing_eval(id: int, plot_forecast = True):
                                   freq = 'D')
     exp_sm = exp_sm.fit()
     exp_sm_forecast = exp_sm.forecast(len(test))
+    exp_sm_forecast = exp_sm_forecast.values
     metrics = calculate_metrics(exp_test, exp_sm_forecast, id = id)
 
     exp_test.reset_index(inplace = True)

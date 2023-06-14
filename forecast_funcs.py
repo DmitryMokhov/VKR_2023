@@ -160,9 +160,10 @@ def calculate_metrics(fact: pd.DataFrame, forecast: Union[np.array, list], id: i
             расчета метрик
     """
     temp_fact = fact[['ds', 'y']]
+    temp_fact.reset_index(drop = True, inplace = True)
     temp_fact['y_forc'] = forecast
-    temp_fact = fact[~fact.ds.isin(['2023-02-23', '2023-02-24', '2023-03-08',
-                                    '2023-05-01', '2023-05-08', '2023-05-09'])]
+    temp_fact = temp_fact[~temp_fact.ds.isin(['2023-02-23', '2023-02-24', '2023-03-08',
+                                                '2023-05-01', '2023-05-08', '2023-05-09'])]
     
     if id == 1:
         temp_fact['y'] = temp_fact['y'] * 644.66 + 1062.1

@@ -61,10 +61,11 @@ def run_tft_eval(id: int, plot_forecast = True):
     #cur_mae = mae(future.y, forecast.y)
     #metrics = {'mape': [cur_mape], 'rmse': [cur_rmse], 'mae': [cur_mae]}
     #metrics = pd.DataFrame(metrics)
+    forecast = forecast.y.values
     metrics = calculate_metrics(future, forecast, id = id)
 
     if plot_forecast:
-        plot_forecasts(future, [forecast.y], ['TFT'])
+        plot_forecasts(future, [forecast], ['TFT'])
 
     return metrics, forecast
 
