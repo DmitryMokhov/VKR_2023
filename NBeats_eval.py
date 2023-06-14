@@ -9,6 +9,7 @@ from sklearn.metrics import mean_absolute_percentage_error as mape
 from common_utils import *
 from dl_funcs import *
 from data_prep import holidays
+from forecast_funcs import calculate_metrics
 FORECAST_LENGTH = 7
 pl.seed_everything(42)
 
@@ -56,11 +57,12 @@ def run_nbeats_eval(id: int, plot_forecast = True):
                                holidays=holidays,
                                forecast_start_date = future.ds.min())
     
-    cur_mape = mape(future.y, forecast.y)
-    cur_rmse = mse(future.y, forecast.y, squared=False)
-    cur_mae = mae(future.y, forecast.y)
-    metrics = {'mape': [cur_mape], 'rmse': [cur_rmse], 'mae': [cur_mae]}
-    metrics = pd.DataFrame(metrics)
+    #cur_mape = mape(future.y, forecast.y)
+    #cur_rmse = mse(future.y, forecast.y, squared=False)
+    #cur_mae = mae(future.y, forecast.y)
+    #metrics = {'mape': [cur_mape], 'rmse': [cur_rmse], 'mae': [cur_mae]}
+    #metrics = pd.DataFrame(metrics)
+    metrics = calculate_metrics(future, forecast, id = id)
 
     if plot_forecast:
         plot_forecasts(future, [forecast.y], ['N-BEATS'])

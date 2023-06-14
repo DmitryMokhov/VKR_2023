@@ -37,9 +37,9 @@ def prophet_forecast(train: pd.DataFrame,
                             fourier_order = 5, prior_scale = 10, mode = 'multiplicative')
     prop.fit(train)
     forecast = prop.predict(test).yhat.values
-    metrics = calculate_metrics(test, forecast)
+    #metrics = calculate_metrics(test, forecast)
 
-    return metrics, forecast
+    return forecast
 
 
 def catboost_loop(train: Pool, 
@@ -67,9 +67,9 @@ def catboost_loop(train: Pool,
     test_y = test.get_label()
     test_y = pd.DataFrame(test_y)
     test_y.columns = ['y']
-    metrics = calculate_metrics(test_y, forecast)
+    #metrics = calculate_metrics(test_y, forecast)
 
-    return metrics, forecast
+    return forecast
 
 
 def get_lstm_net(lookback):
@@ -144,22 +144,39 @@ def lstm_loop(train: pd.DataFrame,
     preds = np.array(preds)
     preds = cur_scaler.inverse_transform(preds).flatten()
 
-    metrics = calculate_metrics(test, preds)
+    #metrics = calculate_metrics(test, preds)
 
-    return metrics, preds
+    return preds
 
 
-def calculate_metrics(fact: pd.DataFrame, forecast: Union[np.array, list]):
+def calculate_metrics(fact: pd.DataFrame, forecast: Union[np.array, list], id: int):
     """
     Функция для вычисления метрик точности прогноза
     Параметры:
         fact (pd.DataFrame): датафрейм с фактическими данными, обязательно должен содержать колонку 'y'
             с настоящими значениями временного ряда за прогнозный период, 
         forecast (Union[np.array, list]): прогноз модели.
+        id: номер ряда в исследовании - 1 или 2; от этого зависит, какое скалирование применять для 
+            расчета метрик
     """
-    cur_mape = mape(fact.y, forecast)
-    cur_rmse = mse(fact.y, forecast, squared=False)
-    cur_mae = mae(fact.y, forecast)
+    temp_fact = fact[['ds', 'y']]
+    temp_fact['y_forc'] = forecast
+    temp_fact = fact[~fact.ds.isin(['2023-02-23', '2023-02-24', '2023-03-08',
+                                    '2023-05-01', '2023-05-08', '2023-05-09'])]
+    
+    if id == 1:
+        temp_fact['y'] = temp_fact['y'] * 644.66 + 1062.1
+        temp_fact['y_forc'] = temp_fact['y_forc'] * 644.66 + 1062.1
+    elif id == 2:
+        temp_fact['y'] = temp_fact['y'] * 169.26 + 253.07
+        temp_fact['y_forc'] = temp_fact['y_forc'] * 169.26 + 253.07
+
+    #cur_mape = mape(fact.y, forecast)
+    #cur_rmse = mse(fact.y, forecast, squared=False)
+    #cur_mae = mae(fact.y, forecast)
+    cur_mape = mape(temp_fact.y, temp_fact.y_forc)
+    cur_rmse = mse(temp_fact.y, temp_fact.y_forc, squared=False)
+    cur_mae = mae(temp_fact.y, temp_fact.y_forc)
 
     metrics = pd.DataFrame(data = {'mape': [cur_mape],
                                   'rmse': [cur_rmse],

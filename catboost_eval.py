@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 from tuning_funcs import tune_catboost
-from forecast_funcs import catboost_loop
+from forecast_funcs import catboost_loop, calculate_metrics
 from common_utils import *
 from data_prep import *
 
@@ -21,10 +21,15 @@ def run_catboost_eval(id: int, plot_forecast = True):
     train_pool, val_pool, test_pool = get_cat_pools(train, val, test)
 
     cat_params = tune_catboost(train_pool, val_pool, mae)
-    cat_metrics, cat_forecast = catboost_loop(train_pool, 
-                                              val_pool, 
-                                              test_pool,
-                                              cat_params)
+    #cat_metrics, cat_forecast = catboost_loop(train_pool, 
+    #                                          val_pool, 
+    #                                          test_pool,
+    #                                          cat_params)
+    cat_forecast = catboost_loop(train_pool,
+                                val_pool,
+                                test_pool,
+                                cat_params)
+    cat_metrics = calculate_metrics(test, cat_forecast, id = id)
     
     if plot_forecast:
         plot_forecasts(test, [cat_forecast], ['Catboost'])

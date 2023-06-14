@@ -20,7 +20,9 @@ def run_prophet_eval(id: int, plot_forecast = True):
     train, test = split_data_without_val(id, df)
     
     prop_best_params = tune_prophet(train, test, mae)
-    metrics, forecast = prophet_forecast(train, test, prop_best_params)
+    #metrics, forecast = prophet_forecast(train, test, prop_best_params)
+    forecast = prophet_forecast(train, test, prop_best_params)
+    metrics = calculate_metrics(test, forecast, id = id)
 
     if plot_forecast:
         plot_forecasts(test, [forecast], ['Prophet'])

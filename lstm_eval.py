@@ -12,7 +12,9 @@ def run_lstm_eval(id: int, plot_forecast = True):
     """
     df = load_data(f'data/series{id}.csv')
     train, val, test = split_data_with_val(id, df)
-    metrics, forecast = lstm_loop(train, val, test, 7)
+    #metrics, forecast = lstm_loop(train, val, test, 7)
+    forecast = lstm_loop(train, val, test, 7)
+    metrics = calculate_metrics(test, forecast, id = id)
 
     if plot_forecast:
         plot_forecasts(test, [forecast], ['LSTM'])
